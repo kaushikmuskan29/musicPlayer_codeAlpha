@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: white;
+            text-align: center;
+        }
+
+        .player {
+            width: 300px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #222;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .cover img {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        #playlist {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+
+        #playlist li {
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        #playlist li:hover {
+            background: #444;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="player">
+        <div class="cover">
+            <img id="album-art" src="" alt="Album Art">
+        </div>
+        
+        <h2 id="song-title">Song Name</h2>
+        <p id="artist">Artist Name</p>
+
+        <audio id="audio-player" src=""></audio>
+
+        <div class="controls">
+            <button id="prev">⏮️</button>
+            <button id="play">▶️</button>
+            <button id="next">⏭️</button>
+            <input type="range" id="volume" min="0" max="1" step="0.1">
+        </div>
+
+        <input type="text" id="search" placeholder="Search song...">
+
+        <ul id="playlist">
+            
+        </ul>
+    </div>
+
+    <script>
+        const audioPlayer = document.getElementById("audio-player");
+        const playButton = document.getElementById("play");
+        const prevButton = document.getElementById("prev");
+        const nextButton = document.getElementById("next");
+        const volumeControl = document.getElementById("volume");
+        const songTitle = document.getElementById("song-title");
+        const artistName = document.getElementById("artist");
+        const albumArt = document.getElementById("album-art");
+        const playlistElement = document.getElementById("playlist");
+        const searchBox = document.getElementById("search");
+
+        const songs = [
+            { title: "Apt", artist: "ROSÉ & Bruno Mars ", src: "song1.mp3", cover: "https://upload.wikimedia.org/wikipedia/en/5/52/Ros%C3%A9_and_Bruno_Mars_-_Apt..png" },
+            { title: "Satisfya", artist: "Imran Khan", src: "song2.mp3", cover: "https://i.scdn.co/image/2846e3004c4ceb9d0b862ee3dca6f2f67974416b" },
+            { title: "Believer", artist: "Imagine Dragons", src: "song3.mp3", cover: "https://i.ytimg.com/vi/mVL2uZLUUsA/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AHUBoAC4AOKAgwIABABGH8gLyhGMA8=&rs=AOn4CLDJTzXRbWmrRtFrlx7ukRQaTe2JTQ" }
+        ];
+
+        let currentSongIndex = 0;
+
+        function loadSong(index) {
+            const song = songs[index];
+            audioPlayer.src = song.src;
+            songTitle.textContent = song.title;
+            artistName.textContent = song.artist;
+            albumArt.src = song.cover;
+        }
+
+        function playPause() {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+                playButton.textContent = "⏸️";
+            } else {
+                audioPlayer.pause();
+                playButton.textContent = "▶️";
+            }
+        }
+
+        function prevSong() {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            loadSong(currentSongIndex);
+            audioPlayer.play();
+        }
+
+        function nextSong() {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            loadSong(currentSongIndex);
+            audioPlayer.play();
+        }
+
+        function updateVolume() {
+            audioPlayer.volume = volumeControl.value;
+        }
+
+        function searchSongs() {
+            const query = searchBox.value.toLowerCase();
+            const filteredSongs = songs.filter(song => song.title.toLowerCase().includes(query));
+
+            playlistElement.innerHTML = "";
+            filteredSongs.forEach((song, index) => {
+                const li = document.createElement("li");
+                li.textContent = song.title;
+                li.onclick = () => {
+                    loadSong(index);
+                    audioPlayer.play();
+                };
+                playlistElement.appendChild(li);
+            });
+        }
+
+        // Load initial song
+        loadSong(currentSongIndex);
+
+        // Event Listeners
+        playButton.addEventListener("click", playPause);
+        prevButton.addEventListener("click", prevSong);
+        nextButton.addEventListener("click", nextSong);
+        volumeControl.addEventListener("input", updateVolume);
+        searchBox.addEventListener("input", searchSongs);
+
+        // Load playlist
+        songs.forEach((song, index) => {
+            const li = document.createElement("li");
+            li.textContent = song.title;
+            li.onclick = () => {
+                loadSong(index);
+                audioPlayer.play();
+            };
+            playlistElement.appendChild(li);
+        });
+    </script>
+</body>
+</html>
